@@ -5,6 +5,10 @@ from ultralytics import YOLO
 import numpy as np
 import os
 from tkinter import font
+from dotenv import load_dotenv
+
+load_dotenv(override=True) #Rieseguire se si apportano modifiche all'env
+exec(open(os.getenv("PATH_CSV_MAKER")).read())
 
 def open_inferenza_yolo_window():
     inferenza_window = tk.Toplevel(root)
@@ -23,9 +27,9 @@ def open_inferenza_yolo_window():
     image_frame.pack(pady=20)
 
     # Load a pretrained YOLOv8m model
-    model = YOLO("weights/yolo_mydataset/best.pt")
+    model = YOLO(os.getenv("PATH_YOLO_BEST"))
     # Specifica il percorso iniziale dove cercare l'input
-    initial_directory = "euro/test/images"
+    initial_directory = os.getenv("PATH_TEST_IMAGES")
 
     #Mappatura tra class id e class name
     class_name_mapping = {
@@ -49,6 +53,7 @@ def open_inferenza_yolo_window():
 
     def read_yolo_labels(label_file,img_width,img_height):
         if not os.path.exists(label_file):
+            print(label_file)
             messagebox.showerror("Attenzione", "Labels non trovate in '/euro/test/labels'.\nImpossibile disegnare i bounding box!\nVisualizzo l'immagine originale")
             boxes=None
             lines=None
@@ -57,10 +62,9 @@ def open_inferenza_yolo_window():
         with open(label_file, 'r') as f:
             lines = f.readlines()
         
-        # Converti le linee in liste di float (coordinate YOLO)
+        # Converte le linee in liste di float (coordinate YOLO)
         boxes = []
         for line in lines:
-            print("Porcodio")
             data = line.strip().split()
             class_id = int(data[0])
             x_center = float(data[1])
@@ -79,10 +83,8 @@ def open_inferenza_yolo_window():
         return boxes,lines
 
     def draw_boxes_on_image(image_path, boxes):
-        # Apri l'immagine
         img = Image.open(image_path)
         
-        # Definisci un elenco di colori per le classi
         class_colors = {
             0: (255, 0, 0),    # Rosso
             1: (0, 255, 0),    # Verde
@@ -92,7 +94,6 @@ def open_inferenza_yolo_window():
             5: (0, 255, 255),  # Ciano
             6: (128, 0, 0),    # Marrone scuro
             7: (0, 128, 0),    # Verde scuro
-            # Aggiungi altri colori per le altre classi se necessario
         }
         
         # Disegna i rettangoli e scrivi il nome della classe sull'immagine
@@ -101,18 +102,21 @@ def open_inferenza_yolo_window():
         for box in boxes:
             class_id, x1, y1, x2, y2 = box
             
-            # Ottieni il colore per la classe corrente
+            # Ottiene il colore per la classe corrente
             if class_id in class_colors:
                 color = class_colors[class_id]
-            else:
-                color = (0, 0, 0)  # Colore nero per classi non definite
+            # else:
+            #     color = (0, 0, 0)  # Colore nero per classi non definite
             
             # Disegna il rettangolo con il colore specifico
             draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
             
             class_name=class_name_mapping[class_id]
+
+            #Calcolo del valore parziale delle monete presenti nell'immagine
             gtValue+=int(class_name)
-            # Scrivi il nome della classe all'interno del rettangolo
+
+            # Scrive il nome della classe all'interno del rettangolo
             draw.text((x1, y1), class_name, fill=(255,255,255),font=ImageFont.truetype("arial.ttf", size=25))
         
         return img,gtValue
@@ -123,12 +127,12 @@ def open_inferenza_yolo_window():
             # Ottieni il nome dell'immagine dall'intero percorso
             filename_without_extension = os.path.splitext(os.path.basename(file_path))[0]
             img=Image.open(file_path)
-            boxes,lines=read_yolo_labels("euro/test/labels/"+filename_without_extension+".txt",img.width,img.height)
+            boxes,lines=read_yolo_labels(os.getenv("PATH_TEST_LABELS")+"/"+filename_without_extension+".txt",img.width,img.height)
             if boxes is not None:
                 img,gtValue=draw_boxes_on_image(file_path,boxes)
                 coin_count_label_gt.config(text="Numero monete: "+str(len(lines))+"\nValore totale: "+str(gtValue/100)+" euro",font=bold_font)
             else:
-                coin_count_label_gt.config(text="",font=bold_font)
+                coin_count_label_gt.config(text="Immagine originale",font=bold_font)
             img = img.resize((640, 640))
             img = ImageTk.PhotoImage(img)
             selected_image_label.config(image=img)
@@ -192,7 +196,7 @@ def open_training_window():
 
 root = tk.Tk()
 root.title("Menu Principale")
-root.geometry("300x200")  # Imposta la dimensione della finestra principale
+root.geometry("300x250")  # Imposta la dimensione della finestra principale
 root.resizable(False, False)  # Disabilita il ridimensionamento
 
 # Centra la finestra principale nello schermo
@@ -200,5 +204,16 @@ center_window(root)
 
 inferenza_yolo_button = tk.Button(root, text="Inferenza con yolo", command=open_inferenza_yolo_window)
 inferenza_yolo_button.pack(pady=20)
+
+label = tk.Label(root, text="Scannerizzami\nper provarlo su smartphone!",font=font.Font(family="Helvetica", size=11, weight="bold"))
+label.pack()
+
+QR_image_label = tk.Label(root)
+QR_image_label.pack()
+# result_image_label.grid(row=0, column=1, padx=10)
+imageQR=Image.open(os.getenv("PATH_ROBOFLOW"))
+imageQR = ImageTk.PhotoImage(imageQR)
+QR_image_label.config(image=imageQR)
+QR_image_label.image = imageQR
 
 root.mainloop()

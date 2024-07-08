@@ -1,6 +1,7 @@
 import os
 import csv
 from dotenv import load_dotenv
+from tkinter import messagebox
 
 load_dotenv(override=True)
 
@@ -36,10 +37,13 @@ directory = [os.getenv("PATH_VALID_LABELS"),os.getenv("PATH_TRAIN_LABELS"),os.ge
 # Path del file CSV di output
 csv_output_path = [os.getenv("PATH_VALID_CSV"),os.getenv("PATH_TRAIN_CSV"),os.getenv("PATH_TEST_CSV")]
 
-# Processa i file di testo e crea i dati per il CSV
-for i in range(0,3):
-    csv_data = process_text_files(directory[i])
-    # Scrivi i dati nel file CSV
-    write_csv(csv_output_path[i], csv_data)
+if not os.path.exists("./euro"):
+    messagebox.showerror("Attenzione!","Perfavore inserisci il contenuto del dataset in una directory 'Progetto_ml/euro'")
+else:
+    # Processa i file di testo e crea i dati per il CSV
+    for i in range(0,3):
+        csv_data = process_text_files(directory[i])
+        # Scrivi i dati nel file CSV
+        write_csv(csv_output_path[i], csv_data)
 
-print(f"CSV creati in percorsi del tipo: "+os.getenv("PATH_TRAIN_CSV"))
+    print(f"CSV creati in percorsi del tipo: "+os.getenv("PATH_TRAIN_CSV"))
