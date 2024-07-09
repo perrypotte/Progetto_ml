@@ -205,7 +205,7 @@ center_window(root)
 inferenza_yolo_button = tk.Button(root, text="Inferenza con yolo", command=open_inferenza_yolo_window)
 inferenza_yolo_button.pack(pady=20)
 
-label = tk.Label(root, text="Scannerizzami\nper provarlo su smartphone!",font=font.Font(family="Helvetica", size=11, weight="bold"))
+label = tk.Label(root, text="Scansionami\nper provare la demo su smartphone!",font=font.Font(family="Helvetica", size=11, weight="bold"))
 label.pack()
 
 QR_image_label = tk.Label(root)
