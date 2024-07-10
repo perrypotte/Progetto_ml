@@ -1,0 +1,7 @@
+data/*.pkl
+logs/prova
+logs/old
+tmp
+*.zip
+__pycache__
+euro/*
