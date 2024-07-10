@@ -86,14 +86,14 @@ def open_inferenza_yolo_window():
         img = Image.open(image_path)
         
         class_colors = {
-            0: (255, 0, 0),    # Rosso
-            1: (0, 255, 0),    # Verde
-            2: (0, 0, 255),    # Blu
-            3: (255, 255, 0),  # Giallo
-            4: (255, 0, 255),  # Magenta
-            5: (0, 255, 255),  # Ciano
-            6: (128, 0, 0),    # Marrone scuro
-            7: (0, 128, 0),    # Verde scuro
+            0: (  6,  41, 255),   # Blu chiaro         # 1 cent
+            1: ( 27, 210, 228),   # Azzurro limpido    # 10 cent
+            2: (247, 240, 247),   # Bianco             # 1 euro
+            3: ( 16, 212, 176),   # Azzurro verdino    # 2 cent
+            4: ( 15,  32, 102),   # Blu scuro          # 20 cent
+            5: (255, 110, 222),   # Rosa               # 2 euro
+            6: (255,  63,  69),   # Rosso              # 5 cent
+            7: (203, 232,   2),   # Giallo             # 50 cent
         }
         
         # Disegna i rettangoli e scrivi il nome della classe sull'immagine
