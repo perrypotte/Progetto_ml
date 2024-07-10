@@ -5,3 +5,6 @@ tmp
 *.zip
 __pycache__
 euro/*
+old
+runs
+yolov8m.pt
