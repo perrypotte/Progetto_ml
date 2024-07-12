@@ -119,49 +119,59 @@ def open_inferenza_yolo_window():
             draw.text((x1, y1), class_name, fill=(255, 255, 255), font=ImageFont.truetype("arial.ttf", size=25))
         
         return img, gtValue
+    
 
-    def pick_file(file_path=None):
+    def pick_file( file_path ):
         if not file_path:
-            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png")], initialdir=initial_directory)
-        if file_path:
-            # Ottieni il nome dell'immagine dall'intero percorso
-            filename_without_extension = os.path.splitext(os.path.basename(file_path))[0]
-            img = Image.open(file_path)
-            boxes, lines = read_yolo_labels(os.getenv("PATH_TEST_LABELS") + "/" + filename_without_extension + ".txt", img.width, img.height)
-            if boxes is not None:
-                img, gtValue = draw_boxes_on_image(file_path, boxes)
-                coin_count_label_gt.config(text="Numero monete: " + str(len(lines)) + "\nValore totale: " + str(gtValue / 100) + " euro", font=bold_font)
-            else:
-                coin_count_label_gt.config(text="Immagine originale", font=bold_font)
-            img = img.resize((640, 640))
-            img = ImageTk.PhotoImage(img)
-            selected_image_label.config(image=img)
-            selected_image_label.image = img
-            selected_image_label.file_path = file_path
-            # Regola la dimensione della finestra principale in base alle dimensioni dell'immagine
-            result = model(file_path)[0]  # predict on an image
-            result.save("tmp/predict.png")
-            # Convert the array to an image ensuring the RGB format is maintained
-            result_img = Image.open("tmp/predict.png")
-            result_img = result_img.resize((640, 640))
+            return
+        
+        # Ottieni il nome dell'immagine dall'intero percorso
+        filename_without_extension = os.path.splitext(os.path.basename(file_path))[0]
+        img = Image.open(file_path)
+        boxes, lines = read_yolo_labels(os.getenv("PATH_TEST_LABELS") + "/" + filename_without_extension + ".txt", img.width, img.height)
+        if boxes is not None:
+            img, gtValue = draw_boxes_on_image(file_path, boxes)
+            coin_count_label_gt.config(text="Numero monete: " + str(len(lines)) + "\nValore totale: " + str(gtValue / 100) + " euro", font=bold_font)
+        else:
+            coin_count_label_gt.config(text="Immagine originale", font=bold_font)
+        img = img.resize((640, 640))
+        img = ImageTk.PhotoImage(img)
+        selected_image_label.config(image=img)
+        selected_image_label.image = img
+        selected_image_label.file_path = file_path
+        # Regola la dimensione della finestra principale in base alle dimensioni dell'immagine
+        result = model(file_path)[0]  # predict on an image
+        result.save("tmp/predict.png")
+        # Convert the array to an image ensuring the RGB format is maintained
+        result_img = Image.open("tmp/predict.png")
+        result_img = result_img.resize((640, 640))
 
-            result_img = ImageTk.PhotoImage(result_img)
-            result_image_label.config(image=result_img)
-            result_image_label.image = result_img
+        result_img = ImageTk.PhotoImage(result_img)
+        result_image_label.config(image=result_img)
+        result_image_label.image = result_img
 
-            predSum = 0
-            for i in (result.boxes.cls).tolist():
-                predSum += int(class_name_mapping[int(i)])
-            coin_count_label.config(text="Numero monete predizione: " + str(len(result.boxes.data)) + "\nValore totale della predizione: " + str(predSum / 100) + " euro", font=bold_font)
-            inferenza_window.update_idletasks()  # Aggiorna il layout prima di ottenere le dimensioni della finestra
-            inferenza_window.geometry(f"{(640 + 50) * 2}x{(640 + 150)}")  # Adatta le dimensioni della finestra
+        predSum = 0
+        for i in (result.boxes.cls).tolist():
+            predSum += int(class_name_mapping[int(i)])
+        coin_count_label.config(text="Numero monete predizione: " + str(len(result.boxes.data)) + "\nValore totale della predizione: " + str(predSum / 100) + " euro", font=bold_font)
+        inferenza_window.update_idletasks()  # Aggiorna il layout prima di ottenere le dimensioni della finestra
+        inferenza_window.geometry(f"{(640 + 50) * 2}x{(640 + 150)}")  # Adatta le dimensioni della finestra
+
+
+    def dnd_callback( file_path ): 
+        pick_file( file_path.strip('{}') )
+
+    def select_button_callback():
+        file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png")], initialdir=initial_directory)
+        pick_file( file_path )
+        
 
     def drop(event):
         file_path = event.data
         if file_path:
-            pick_file(file_path)
+            dnd_callback(file_path)
 
-    select_button = tk.Button(inferenza_window, text="Seleziona immagine di test", command=pick_file)
+    select_button = tk.Button(inferenza_window, text="Seleziona immagine di test", command=select_button_callback)
     select_button.pack()
 
     drop_label = tk.Label(inferenza_window, text="O trascina l'immagine in questo box", width=40, height=10, bg="lightgrey")
@@ -197,12 +207,13 @@ def center_window(window):
     y = (screen_height - height) // 2
     window.geometry(f"{width}x{height}+{x}+{y}")
 
-def open_training_window():
-    training_window = tk.Toplevel(root)
-    training_window.title("Training")
-    training_window.geometry("600x400")  # Imposta la dimensione della finestra
-    training_window.resizable(False, False)  # Disabilita il ridimensionamento
-    # Aggiungi qui gli elementi per la finestra di training
+#  da cancellare?
+# def open_training_window():
+#     training_window = tk.Toplevel(root)
+#     training_window.title("Training")
+#     training_window.geometry("600x400")  # Imposta la dimensione della finestra
+#     training_window.resizable(False, False)  # Disabilita il ridimensionamento
+#     # Aggiungi qui gli elementi per la finestra di training
 
 root = TkinterDnD.Tk()
 root.title("Menu Principale")

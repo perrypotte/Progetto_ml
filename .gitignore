@@ -9,3 +9,4 @@ old
 runs
 yolov8m.pt
 yolov8n.pt
+.ignore/
