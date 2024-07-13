@@ -9,6 +9,6 @@ if __name__ == '__main__':
     
     model = YOLO("yolov8m.yaml").load("yolov8m.pt")  # build from YAML and transfer weights
 
-    results = model.train(data= Path(os.getenv("PATH_YAML")).resolve().as_posix(), epochs=1, imgsz=32)
+    results = model.train(data= Path(os.getenv("PATH_YAML")).resolve().as_posix(), epochs=300, imgsz=640)
 
     #print(results)

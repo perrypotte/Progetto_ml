@@ -4,7 +4,7 @@ logs/old
 tmp
 *.zip
 __pycache__
-euro/*
+euro*/
 old
 runs
 yolov8m.pt
