@@ -7,3 +7,4 @@ python-dotenv
 tensorboard
 torch-directml
 ultralytics
+tkinterdnd2
