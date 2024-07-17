@@ -8,4 +8,3 @@ tensorboard
 torch-directml
 ultralytics
 tkinterdnd2
-tk
