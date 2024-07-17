@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk #Questo modulo è ottenibile solo attraverso l'installer di python!!!
 from tkinter import filedialog, messagebox, font
 from tkinterdnd2 import DND_FILES, TkinterDnD
 from PIL import Image, ImageTk, ImageDraw, ImageFont
